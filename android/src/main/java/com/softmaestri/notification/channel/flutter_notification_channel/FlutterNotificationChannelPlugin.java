@@ -78,15 +78,19 @@ public class FlutterNotificationChannelPlugin implements FlutterPlugin, MethodCa
           notificationChannel.enableVibration(enableVibration);
 
           if (enableSound) {
-            String packageName = context.getPackageName();
-            int soundId = context.getResources().getIdentifier(sound, "raw", packageName);
-            Uri soundUri = Uri.parse("android.resource://" + packageName + "/" + soundId);
-
             AudioAttributes attributes = new AudioAttributes.Builder()
               .setUsage(AudioAttributes.USAGE_NOTIFICATION)
               .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
               .build();
-            notificationChannel.setSound(soundUri, attributes);
+
+            if(sound=="default") {
+              notificationChannel.setSound(Settings.System.DEFAULT_NOTIFICATION_URI, attributes);
+            } else {
+              String packageName = context.getPackageName();
+              int soundId = context.getResources().getIdentifier(sound, "raw", packageName);
+              Uri soundUri = Uri.parse("android.resource://" + packageName + "/" + soundId);
+              notificationChannel.setSound(soundUri, attributes);
+            }
           }
 
           NotificationManager notificationManager =
